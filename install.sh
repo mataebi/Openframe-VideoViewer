@@ -15,34 +15,34 @@ arq=$(uname -m)
 
 if [ $os == "Linux" ]; then
 
-    # on Debian Linux distributions
-
-    # same for any debian disto (untested), including rpi (tested)
-    sudo apt-get install -y omxplayer
-
     if [ $arq == "armv7l" ]; then
         # on RaspberryPi 2 or higher
         echo "armv7l"
 
-        # ####
-        #
-        # FOR NOW, CODE GOES HERE since we're shooting for RPi support
-        #
-        # ####
+        # Bullseye does not support omxplayer anymore so we need to install it from the raspberry archive
+        OPPACKG=omxplayer_20190723+gitf543a0d-1_armhf.deb
+        OPARCHIVE=/var/cache/apt/archives/$OPPACKG
+        curl -s https://archive.raspberrypi.org/debian/pool/main/o/omxplayer/$OPPACKG | \
+        sudo tee $OPARCHIVE > /dev/null && sudo dpkg --install $OPARCHIVE
+
+        # Bullseye does not provide the libraries needed for omxplayer so we might have to install them here
+        if [ ! -r /opt/vc/lib/libbrcmGLESv2.so ]; then
+          git clone --depth=1 --branch=master https://github.com/raspberrypi/firmware.git /tmp/firmware
+          sudo mv /tmp/firmware/opt/vc /opt
+          rm -rf /tmp/firmware
+        fi
 
     elif [ $arq == "armv6l" ]; then
         # on RaspberryPi 1 (A+, B+)
         echo "armv6l"
 
-        # ####
-        #
-        # FOR NOW, CODE GOES HERE since we're shooting for RPi support
-        #
-        # ####
+        sudo apt-get install -y omxplayer
 
     else
         # Non-arm7 Debian...
         echo "non armv7l"
+        
+        sudo apt-get install -y omxplayer
     fi
 
 elif [ $os == "Darwin" ]; then
