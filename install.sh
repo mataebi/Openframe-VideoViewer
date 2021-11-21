@@ -21,7 +21,7 @@ if [ $os == "Linux" ]; then
 
         # Bullseye does not support omxplayer anymore so we need to install it from the raspberry archive
         if [ ! -x /usr/bin/omxplayer ]; then
-          echo "Installing omxplayer"
+          echo -e "\nInstalling omxplayer"
           OPPACKG=omxplayer_20190723+gitf543a0d-1_armhf.deb
           OPARCHIVE=/var/cache/apt/archives/$OPPACKG
           curl -s https://archive.raspberrypi.org/debian/pool/main/o/omxplayer/$OPPACKG | \
@@ -30,7 +30,7 @@ if [ $os == "Linux" ]; then
 
         # Bullseye does not provide the libraries needed for omxplayer so we might have to install them here
         if [ ! -r /opt/vc/lib/libbrcmGLESv2.so ]; then
-         echo "Installing Raspberry Pi videocore"
+         echo -e "\nInstalling Raspberry Pi videocore"
          git clone --depth=1 --branch=master https://github.com/raspberrypi/firmware.git /tmp/firmware
           sudo mv /tmp/firmware/opt/vc /opt
           rm -rf /tmp/firmware
