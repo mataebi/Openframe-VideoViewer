@@ -2,7 +2,7 @@
 #
 # Be VERY Careful. This script may be executed with admin privileges.
 
-echo "Openframe Video -- install.sh"
+echo "Installing Openframe Video Viewer..."
 
 if ! [ -z "$TRAVIS" ]; then
     echo "TRAVIS env, don't install"
@@ -20,14 +20,18 @@ if [ $os == "Linux" ]; then
         echo "armv7l"
 
         # Bullseye does not support omxplayer anymore so we need to install it from the raspberry archive
-        OPPACKG=omxplayer_20190723+gitf543a0d-1_armhf.deb
-        OPARCHIVE=/var/cache/apt/archives/$OPPACKG
-        curl -s https://archive.raspberrypi.org/debian/pool/main/o/omxplayer/$OPPACKG | \
-        sudo tee $OPARCHIVE > /dev/null && sudo dpkg --install $OPARCHIVE
+        if [ ! -x /usr/bin/omxplayer ]; then
+          echo "Installing omxplayer"
+          OPPACKG=omxplayer_20190723+gitf543a0d-1_armhf.deb
+          OPARCHIVE=/var/cache/apt/archives/$OPPACKG
+          curl -s https://archive.raspberrypi.org/debian/pool/main/o/omxplayer/$OPPACKG | \
+          sudo tee $OPARCHIVE > /dev/null && sudo dpkg --install $OPARCHIVE
+        fi
 
         # Bullseye does not provide the libraries needed for omxplayer so we might have to install them here
         if [ ! -r /opt/vc/lib/libbrcmGLESv2.so ]; then
-          git clone --depth=1 --branch=master https://github.com/raspberrypi/firmware.git /tmp/firmware
+         echo "Installing Raspberry Pi videocore"
+         git clone --depth=1 --branch=master https://github.com/raspberrypi/firmware.git /tmp/firmware
           sudo mv /tmp/firmware/opt/vc /opt
           rm -rf /tmp/firmware
         fi
